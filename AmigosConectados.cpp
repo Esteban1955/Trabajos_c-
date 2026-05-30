@@ -7,11 +7,11 @@
 
 using namespace std;
 
-const int SIZE = 100;
-int counter = 0;
+const int SIZE = 100; //máximo de los usuarios porque no hay memoria
+int counter = 0; // esto nos dice cuantos usuarios hay realmente
 vector<User> users(SIZE);
 
-// Función para cargar los datos del archivo TXT
+// Función para cargar los datos del archivo TXT proporcionado por el maestro y llamado "users.txt"
 bool loadFile(string filename) {
     ifstream file(filename);
     if (!file.is_open()) {
@@ -20,9 +20,9 @@ bool loadFile(string filename) {
     }
 
     int n;
-    file >> n; // Leer cantidad de usuarios (15 en tu ejemplo)
+    file >> n; // esto hace que lea el numero que dice cuanta gente hay en el archivo
 
-    // Primera pasada: Crear los usuarios con ID y Nombre
+    // primeramente se crea a los usuarios con su id y el nombre
     for (int i = 0; i < n; i++) {
         int id;
         string name;
@@ -31,30 +31,30 @@ bool loadFile(string filename) {
         counter++; 
     }
 
-    // Segunda pasada: Crear las conexiones de amigos
+    // luego aca se conecta los amigos
     for (int i = 0; i < n; i++) {
         int userId, numFriends;
         file >> userId >> numFriends;
         for (int j = 0; j < numFriends; j++) {
             int friendId;
             file >> friendId;
-            // Agregamos el puntero del usuario amigo
+            // le damos aca la direccion del amigo para la funcion "addFriend"
             users[userId].addFriend(&users[friendId]);
         }
     }
 
-    file.close();
+    file.close(); //aqui cerramos el archivo para no gastar mas memoria
     return true;
 }
 
-// Función para mostrar todos los usuarios
+// función para mostrar todos los usuarios
 void displayUsers() {
     for (int i = 0; i < counter; i++) {
         cout << users[i].toString() << endl;
     }
 }
 
-// Función para añadir un nuevo usuario manualmente
+// función para añadir un nuevo usuario manualmente
 void addAUser() {
     if (counter >= SIZE) {
         cout << "Memoria llena." << endl;
@@ -64,7 +64,7 @@ void addAUser() {
     cout << "Name? ";
     getline(cin, name);
 
-    // Usamos el 'counter' actual como ID y posición
+    // usamos el 'counter' actual como ID y posición en el arrreglo
     users[counter] = User(counter, name);
     counter++;
     cout << "Usuario agregado con exito." << endl;
@@ -81,6 +81,7 @@ void addFriendToUser() {
     cout << "Which user do you want to add as a friend? ";
     cin >> id2;
 
+    // checamos que los ids si existan antes de hacer la conexión porque haria error si no me equivoco
     if (id1 < counter && id2 < counter) {
         users[id1].addFriend(&users[id2]);
         cout << "Ahora " << users[id1].getName() << " es amigo de " << users[id2].getName() << endl;
@@ -89,7 +90,7 @@ void addFriendToUser() {
     }
 }
 
-// Función para quitar una amistad
+// función para quitar una amistad o amigo de la lista que tenemos en la lista de usuarios
 void deleteFriendFromUser() {
     int id1, id2;
     displayUsers();
@@ -109,7 +110,7 @@ void deleteFriendFromUser() {
 int main(int argc, char* argv[]) {
     int option;
 
-    // Intentar cargar el archivo al inicio
+    // Intentar cargar el archivo al inicio, porque sino no tiene ni sentido seguirle
     if (!loadFile("users.txt")) {
         return -1;
     }
@@ -124,8 +125,7 @@ int main(int argc, char* argv[]) {
         cout << "What do you want to do? ";
         cin >> option;
         
-        cin.ignore(); // Limpiar el buffer para el siguiente getline
-
+        cin.ignore(); // aca se limpia lo que nos muestra  cin para que el getline no me falle
         switch (option) {
             case 1 : addAUser(); break;
             case 2 : cout << "Users:\n"; displayUsers(); break;
@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
             case 5 : cout << "Saliendo...\n"; break;
             default: cout << "Opcion no valida.\n";
         }
-    } while (option != 5);
+    } while (option != 5); // aca simplemente la funcion es un bucle que se repide indefinidamente hasta que escojamos salir de el
 
     return 0;
 }
